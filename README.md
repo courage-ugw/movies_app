@@ -18,5 +18,20 @@ The application supports two different commands:
   * the least-rated movie
   * movies sorted by rating
 
+### 3. Multiple Storage Files
+* For instance, assuming members of a family use the application, e.g., John, Sara, and 
+  Jack. 
+
+* Each family member has their favorite movies that they want to store in the movie 
+  app. The application serves all the family members such that each family member has 
+  their own storage file while they store their personal movie. 
+  * For example, you may have:
+    * 
+        john.json - John's storage file
+    * 
+        sara.json - Sara's storage file
+    * 
+        jack.csv - Jack's storage file
+  
 
    

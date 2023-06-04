@@ -6,6 +6,7 @@ class IStorage(ABC):
     AN INTERFACE (ABSTRACT CLASS) THAT EXPOSES ALL THE CRUD COMMANDS (ABSTRACT METHODS,
     WHICH ARE TO BE IMPLEMENTED BY THE SUBCLASSES)
     """
+
     @abstractmethod
     def list_movies(self):
         """
@@ -26,7 +27,6 @@ class IStorage(ABC):
              },
            }
            """
-        pass
 
     @abstractmethod
     def add_movie(self, title):
@@ -35,7 +35,6 @@ class IStorage(ABC):
        Loads the information from file, add the movie,
        and saves it.
        """
-        pass
 
     @abstractmethod
     def delete_movie(self, title):
@@ -45,8 +44,6 @@ class IStorage(ABC):
        and saves it.
        """
 
-        pass
-
     @abstractmethod
     def update_movie(self, title, notes):
         """
@@ -54,4 +51,3 @@ class IStorage(ABC):
        Loads the information from file, updates the movie,
        and saves it
        """
-        pass
