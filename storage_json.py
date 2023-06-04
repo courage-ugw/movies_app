@@ -5,9 +5,20 @@ import requests
 
 
 class StorageJson(IStorage):
+    """
+    THIS CLASS INTERACTS WITH (INHERITS) THE STORAGE INTERFACE (ABSTRACT CLASS) AND
+    IMPLEMENTS THE CRUD METHODS IN THE STORAGE INTERFACE.
+
+    IT GETS THE FILE PATH AS PARAMETER AND READS/WRITES TO JSON FILE
+    """
+
+    # Movie API Endpoint
     _REQUEST_URL = f'https://www.omdbapi.com/?apikey=eb462b7d&t='
 
     def __init__(self, file_path):
+        """ CONSTRUCTOR. INITIALIZES THE INSTANCE OF THE OBJECT"""
+
+        # File path
         self._file_path = file_path
 
         # CREATES THE JSON FILE, IF THE FILE ALREADY EXISTS, DO NOTHING
@@ -23,12 +34,16 @@ class StorageJson(IStorage):
 
     def list_movies(self):
         """ LOADS THE JSON FILE, AND RETURNS THE DATA IN THE FILE AS DICT """
+
         movies_data = self._movies_data
+
+        # Checks if file is empty
         if len(movies_data) == 0:
-            return "empty file!"
+            print("empty file!")
+            return {}
+
         movie_list = {movie: [movies_data[movie]['rating'], movies_data[movie]['year']]
-                      for
-                      movie in movies_data}
+                      for movie in movies_data}
         return movie_list
 
     def add_movie(self, movie_title):
@@ -96,6 +111,7 @@ class StorageJson(IStorage):
 
     @property
     def movies_data(self):
+        """ RETURNS THE MOVIES DATA AS DICT"""
         return self._movies_data
 
     def save_movie(self, movie_data):
@@ -104,6 +120,13 @@ class StorageJson(IStorage):
             json.dump(movie_data, json_file)
 
     def movie_title_match_suggestion(self, movies_data, movie_title):
+        """
+        GETS MOVIES DATA (DICT) AND MOVIE TITLE (STR)
+        CHECKS IF MOVIE TITLE HAS A CLOSE SIMILARITY WITH ANY KEY IN MOVIES DATA
+        IF SIMILARITY SCORE IS GREATER THAN OR EQUAL TO 70,
+        THE MATCHED NAME IS SUGGESTED TO THE USER.
+        """
+
         try:
             matched_name, _ = process.extractOne(movie_title,
                                                  movies_data.keys(),

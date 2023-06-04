@@ -1,15 +1,19 @@
 import logging
-from colorama import Style
 import random
 import re
 import statistics
 import sys
-
 import requests
 from fuzzywuzzy import process
 
 
 class MovieApp:
+    """
+     MovieApp class contains all the logic of the movie app
+     (menu, commands etc.).
+    """
+
+    # Movie App Menu
     _menu = """ 
 Menu:
 0. Exit
@@ -27,21 +31,28 @@ Enter choice (0-9):
     """
 
     def __init__(self, storage):
+        """
+        CONSTRUCTOR FOR THE MovieApp Class.
+        GETS STORAGE OBJECT AS PARAMETER
+        """
         # Storage Object
         self._storage = storage
+
         # Movies Data from File
         self._movies_data = storage.movies_data
+
         # HTML File Path
-        self._html_file_path = '_static/index.html'
+        self._html_file_path = '_static/index_template.html'
+
         # Title for HTML Page
         self._html_file_title = "Masterschool's Movie App"
-        # Command to exit movie app
-        self._exit_app = 0
+
         # REGEX pattern for HTML content
         self._search_pattern = '<li>[\s\S]*?<div class="movie">\s*?<a href=".*?" ' \
                                'target="_blank">\s*?<img class="movie-poster" src=".*?" ' \
                                'title=""><\/a>\s*?<div class="movie-title">.*?<\/div>' \
                                '\s*?<div class="movie-year">.*?<\/div>[\s\S]*?<\/li>'
+
         # Country Flag API
         self._country_flag_url = "https://countriesnow.space/api/v0.1/countries/flag/images"
 
@@ -50,11 +61,21 @@ Enter choice (0-9):
             self._html_content = html_file.read()
 
     def _command_exit_app(self):
+        """ EXITS THE APP """
+
         print("Bye!")
         sys.exit()
 
     def _command_list_movies(self):
+        """
+        CALLS THE list_movies() FUNCTION FROM THE STORAGE CLASS,
+        PRINTS INFORMATION TO THE SCREEN FOR THE USER
+        """
+
+        # Calls list_movies from the storage class using the storage object
         movies_list = self._storage.list_movies()
+
+        # Checks if file is empty
         if len(movies_list) == 0:
             pass
         else:
@@ -63,22 +84,42 @@ Enter choice (0-9):
                 print(f"{movie}: {movies_list[movie][0]}, {movies_list[movie][1]}")
 
     def _command_add_movie(self):
+        """
+        PROMPTS USER FOR INPUT COMMAND
+        CALLS THE add_movie() FUNCTION FROM THE STORAGE CLASS,
+        PRINTS SUCCESS MESSAGE TO THE SCREEN FOR THE USER
+        """
         movie_title = input("Enter new movie name: ")
         movie = self._storage.add_movie(movie_title)
         print(movie)
 
     def _command_update_movie(self):
+        """
+        PROMPTS USER FOR INPUT COMMAND AND MOVIE NOTES
+        CALLS THE update_movie() FUNCTION FROM THE STORAGE CLASS,
+        PRINTS SUCCESS MESSAGE TO THE SCREEN FOR THE USER
+        """
         movie_title = input("Enter movie name: ")
         movie_note = input("Enter movie note: ").title()
         movie = self._storage.update_movie(movie_title, movie_note)
         print(movie)
 
     def _command_delete_movie(self):
+        """
+        PROMPTS USER FOR INPUT COMMAND
+        CALLS THE delete_movie() FUNCTION FROM THE STORAGE CLASS,
+        PRINTS SUCCESS MESSAGE TO THE SCREEN FOR THE USER
+        """
         movie_title = input("Enter movie name to delete: ")
         movie = self._storage.delete_movie(movie_title)
         print(movie)
 
     def _command_movie_stats(self):
+        """
+        GETS MOVIE TITLES AND RATINGS,
+        CALCUALTES THE MEAN AND MEDIAN USING THE RATINGS
+        PRINTS THE INFORMATION TO THE SCREEN FOR THE USER
+        """
         # Gets only movie titles and ratings
         titles_and_ratings = {title: float(self._movies_data[title]['rating'])
                               for title in self._movies_data}
@@ -169,11 +210,33 @@ Worst Movie: {worst_movie}, {worst_rating}
         LOADS CONTENT FROM HTML FILE, LOADS MOVIES DATA FROM FILE AND
         SERIALIZES THE DATA FOR HTML. REPLACES THE HTML FILE WITH THE SERIALIZED DATA
         """
+        try:
+            # Sort Movies Based on their ratings
+            sorted_movies_data = dict(sorted(self._movies_data.items(),
+                                             key=lambda item: float(item[1]['rating']),
+                                             reverse=True))
+        except ValueError:
+            movies_to_remove = set()
 
-        sorted_movies_data = dict(sorted(self._movies_data.items(),
-                                    key=lambda item: float(item[1]['rating']),
-                                    reverse=True))
+            # check if any value is missing in the data. Missing values are assigned 'N/A'
+            for movie in self._movies_data:
+                for key, value in self._movies_data[movie].items():
+                    if value == 'N/A':
+                        # append all the keys with missing value in a list
+                        movies_to_remove.add(movie)
+
+            # remove all the data with missing value
+            for movie in movies_to_remove:
+                self._movies_data.pop(movie)
+
+            # Sort Movies Based on their ratings
+            sorted_movies_data = dict(sorted(self._movies_data.items(),
+                                             key=lambda item: float(item[1]['rating']),
+                                             reverse=True))
+
+        # Serialize Movies for HTML
         movies_data_serialized = self._serialize_movie_data(sorted_movies_data)
+
         return self._replace_html_content(movies_data_serialized, self._html_content)
 
     def _serialize_movie_data(self, movies_data):
@@ -277,6 +340,11 @@ Worst Movie: {worst_movie}, {worst_rating}
                    f'alt="{country.strip()}">'
 
     def _validate_user_input(self, user_input):
+        """
+        GETS USER INPUT COMMAND
+        VALIDATE THE COMMAND BY CHECKING THAT IT IS WITHIN THE RANGE 0-9
+        RETURNS THE VALIDATED USER INPUT COMMAND
+        """
         user_input = self._is_digit(user_input)
         while int(user_input) not in range(10):
             print(f"The option '{int(user_input)}' is not in the menu.")
@@ -285,12 +353,21 @@ Worst Movie: {worst_movie}, {worst_rating}
         return user_input
 
     def _is_digit(self, user_input):
+        """
+        GETS USER INPUT COMMAND
+        VALIDATE THE COMMAND BY CHECKING THAT USER COMMAND IS A NUMBER (OR DIGIT)
+        RETURNS THE VALIDATED USER INPUT COMMAND
+        """
         while not user_input.isdigit():
             user_input = input(self._menu)
         return user_input
 
     @property
     def _user_choice_command(self):
+        """
+        DISPATCH TABLE (DICT) THAT CONTAINS THE USER INPUT COMMANDS AS KEYS AND
+        THE METHODS THAT EXECUTE THE COMMANDS AS VALUES.
+        """
         return {0: '_command_exit_app',
                 1: '_command_list_movies',
                 2: '_command_add_movie',
@@ -308,11 +385,13 @@ Worst Movie: {worst_movie}, {worst_rating}
         PRINTS THE MAIN MENU,
         GETS USER INPUT,
         CALLS THE REQUIRED METHOD AND EXECUTE COMMAND,
-        EXITS APP WHEN USER QUITS """
+        EXITS APP WHEN USER QUITS
+        """
 
+        # Prints the heading of the Movies App
         print("\n** ** ** ** ** My Movies Database ** ** ** ** **")
 
-        # GETS USER INPUT AND VALIDATE INPUT
+        # Gets user input commands and validate the input commands
         user_input = input(self._menu)
         user_input_validated = self._validate_user_input(user_input)
 
@@ -326,7 +405,7 @@ Worst Movie: {worst_movie}, {worst_rating}
             while user:
                 user = input("\nPress Enter to continue ")
 
-            # GETS USER INPUT AND VALIDATE INPUT
+            # Gets user input commands and validate the input commands
             user_input = input(self._menu)
             user_input_validated = self._validate_user_input(user_input)
 
