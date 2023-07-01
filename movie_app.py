@@ -17,7 +17,7 @@ class MovieApp:
     _menu = """ 
 Menu:
 0. Exit
-1. List movies
+1. List movies_manager
 2. Add movie
 3. Delete movie
 4. Update movie
@@ -72,14 +72,14 @@ Enter choice (0-9):
         PRINTS INFORMATION TO THE SCREEN FOR THE USER
         """
 
-        # Calls list_movies from the storage class using the storage object
+        # Calls list_movies from the logs class using the logs object
         movies_list = self._storage.list_movies()
 
         # Checks if file is empty
         if len(movies_list) == 0:
             pass
         else:
-            print(f'{len(movies_list)} movies in total: ')
+            print(f'{len(movies_list)} movies_manager in total: ')
             for movie in movies_list:
                 print(f"{movie}: {movies_list[movie][0]}, {movies_list[movie][1]}")
 
@@ -177,7 +177,7 @@ Worst Movie: {worst_movie}, {worst_rating}
         titles_and_ratings = {title: float(self._movies_data[title]['rating'])
                               for title in self._movies_data}
 
-        # Checks for similarity of movie_title in movies dict using the fuzzywuzzy library
+        # Checks for similarity of movie_title in movies_manager dict using the fuzzywuzzy library
         search_result = process.extractOne(movie_title, titles_and_ratings.keys(),
                                            score_cutoff=70)
 
@@ -199,7 +199,7 @@ Worst Movie: {worst_movie}, {worst_rating}
         titles_and_ratings = {title: float(self._movies_data[title]['rating'])
                               for title in self._movies_data}
 
-        # Sort movies by ratings
+        # Sort movies_manager by ratings
         movies_sorted = sorted(titles_and_ratings.items(), key=lambda item: item[1],
                                reverse=True)
         for movie in movies_sorted:

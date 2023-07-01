@@ -30,6 +30,8 @@ def main():
         storage = StorageCsv(args.file_name)
         movie_app = MovieApp(storage)
         movie_app.run()
+    else:
+        print("Please add an extension to your file name. Example: john.json or john.csv")
 
 
 if __name__ == "__main__":

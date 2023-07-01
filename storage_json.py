@@ -13,7 +13,7 @@ class StorageJson(IStorage):
     """
 
     # Movie API Endpoint
-    _REQUEST_URL = f'https://www.omdbapi.com/?apikey=eb462b7d&t='
+    _REQUEST_URL = 'https://www.omdbapi.com/?apikey=eb462b7d&t='
 
     def __init__(self, file_path):
         """ CONSTRUCTOR. INITIALIZES THE INSTANCE OF THE OBJECT"""

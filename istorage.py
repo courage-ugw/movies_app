@@ -11,7 +11,7 @@ class IStorage(ABC):
     def list_movies(self):
         """
            Returns a dictionary of dictionaries that
-           contains the movies information in the database.
+           contains the movies_manager information in the db_managers.
 
            The function loads the information from the file
            and returns the data.
@@ -31,7 +31,7 @@ class IStorage(ABC):
     @abstractmethod
     def add_movie(self, title):
         """
-       Adds a movie to the movies database.
+       Adds a movie to the movies_manager db_managers.
        Loads the information from file, add the movie,
        and saves it.
        """
@@ -39,7 +39,7 @@ class IStorage(ABC):
     @abstractmethod
     def delete_movie(self, title):
         """
-       Deletes a movie from the movies database.
+       Deletes a movie from the movies_manager db_managers.
        Loads the information from file, deletes the movie,
        and saves it.
        """
@@ -47,7 +47,7 @@ class IStorage(ABC):
     @abstractmethod
     def update_movie(self, title, notes):
         """
-       Updates a movie from the movies database.
+       Updates a movie from the movies_manager db_managers.
        Loads the information from file, updates the movie,
        and saves it
        """
